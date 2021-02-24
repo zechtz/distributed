@@ -7,6 +7,7 @@ import (
 	"context"
 
 	"github.com/zechtz/distributed/log"
+	"github.com/zechtz/distributed/registry"
 	"github.com/zechtz/distributed/service"
 )
 
@@ -15,7 +16,13 @@ func main() {
 
 	host, port := "localhost", "4000"
 
-	ctx, err := service.Start(context.Background(), "Log Service", host, port, log.RegisterHandlers)
+	serviceAddress := fmt.Sprintf("http://%v:%v", host, port)
+
+	var r registry.Registration
+	r.ServiceName = registry.LogService
+	r.ServiceURL = serviceAddress
+
+	ctx, err := service.Start(context.Background(), r, host, port, log.RegisterHandlers)
 
 	if err != nil {
 		stlog.Fatal(err)
