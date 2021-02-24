@@ -11,6 +11,8 @@ type Registration struct {
 type ServiceName string
 
 const (
-	// LogService
+	// LogService the registration sercie
 	LogService = ServiceName("LogService")
+	// GradingService - the grading service
+	GradingService = ServiceName("GradingService")
 )
