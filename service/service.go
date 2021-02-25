@@ -29,7 +29,7 @@ func startService(ctx context.Context, serviceName registry.ServiceName, host, p
 	srv.Addr = ":" + port
 
 	go func() {
-		log.Panicln(srv.ListenAndServe())
+		log.Println(srv.ListenAndServe())
 		cancel()
 	}()
 
