@@ -15,6 +15,16 @@ type serviceUpdateHandler struct{}
 
 // RegisterService registers new services
 func RegisterService(r Registration) error {
+
+	heartbeatURL, err := url.Parse(r.HeartbeatURL)
+	if err != nil {
+		return err
+	}
+
+	http.HandleFunc(heartbeatURL.Path, func(res http.ResponseWriter, req *http.Request) {
+		res.WriteHeader(http.StatusOK)
+	})
+
 	serviceUpdateURL, err := url.Parse(r.ServiceUpdateURL)
 	if err != nil {
 		return err
