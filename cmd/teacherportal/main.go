@@ -2,28 +2,35 @@ package main
 
 import (
 	"fmt"
+	stlog "log"
 
-	"github.com/zechtz/distributed/grades"
+	"context"
+
 	"github.com/zechtz/distributed/log"
 	"github.com/zechtz/distributed/registry"
 	"github.com/zechtz/distributed/service"
-	"golang.org/x/net/context"
-
-	stlog "log"
+	"github.com/zechtz/distributed/teacherportal"
 )
 
 func main() {
-	host, port := "localhost", "6000"
+	err := teacherportal.ImportTemplates()
+	if err != nil {
+		stlog.Fatal(err)
+	}
+	host, port := "localhost", "5000"
 	serviceAddress := fmt.Sprintf("http://%v:%v", host, port)
 
 	var r registry.Registration
-	r.ServiceName = registry.GradingService
+	r.ServiceName = registry.TeacherPortalService
 	r.ServiceURL = serviceAddress
-	r.RequiredServices = []registry.ServiceName{registry.LogService}
+	r.RequiredServices = []registry.ServiceName{
+		registry.LogService,
+		registry.GradingService,
+	}
 	r.ServiceUpdateURL = r.ServiceURL + "/services"
 	r.HeartbeatURL = r.ServiceURL + "/heartbeat"
 
-	ctx, err := service.Start(context.Background(), r, host, port, grades.RegisterHandlers)
+	ctx, err := service.Start(context.Background(), r, host, port, teacherportal.RegisterHandlers)
 
 	if err != nil {
 		stlog.Fatal(err)
@@ -35,5 +42,5 @@ func main() {
 	}
 
 	<-ctx.Done()
-	fmt.Println("Shutting down grading server...")
+	fmt.Println("Shutting down teacher portal server...")
 }
